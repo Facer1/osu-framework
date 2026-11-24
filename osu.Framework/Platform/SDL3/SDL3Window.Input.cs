@@ -101,13 +101,19 @@ namespace osu.Framework.Platform.SDL3
         private readonly Dictionary<SDL_JoystickID, SDL3ControllerBindings> controllers = new Dictionary<SDL_JoystickID, SDL3ControllerBindings>();
 
         private void updateCursorVisibility(bool cursorVisible) =>
-            ScheduleCommand(() =>
-            {
-                if (cursorVisible)
-                    SDL_ShowCursor().LogErrorIfFailed();
-                else
-                    SDL_HideCursor().LogErrorIfFailed();
-            });
+    ScheduleCommand(() =>
+    {
+        if (OperatingSystem.IsAndroid())
+        {
+            SDL_HideCursor().LogErrorIfFailed();
+            return;
+        }
+
+        if (cursorVisible)
+            SDL_ShowCursor().LogErrorIfFailed();
+        else
+            SDL_HideCursor().LogErrorIfFailed();
+    });
 
         /// <summary>
         /// Updates OS cursor confinement based on the current <see cref="CursorState"/>, <see cref="CursorConfineRect"/> and <see cref="RelativeMouseMode"/>.
