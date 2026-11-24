@@ -25,6 +25,42 @@ namespace osu.Framework.Android
     public class AndroidGameHost : SDLGameHost
     {
         private readonly AndroidGameActivity activity;
+        protected override IEnumerable<osu.Framework.Input.Handlers.InputHandler> CreateAvailableInputHandlers()
+{
+    yield return new AndroidTabletHandler();
+
+    foreach (var handler in base.CreateAvailableInputHandlers())
+        yield return handler;
+}
+
+private class AndroidTabletHandler : osu.Framework.Input.Handlers.InputHandler
+{
+    public override bool IsActive => true;
+
+    public override string Description => "Android Tablet";
+
+    public override bool Initialize(GameHost host)
+    {
+        if (!base.Initialize(host))
+            return false;
+
+        AndroidGameActivity.Surface.GenericMotion += (_, args) =>
+        {
+            var e = args.Event;
+
+            if (e == null || !Enabled.Value)
+                return;
+
+            PendingInputs.Enqueue(
+                new osu.Framework.Input.StateChanges.MousePositionAbsoluteInput
+                {
+                    Position = new osuTK.Vector2(e.GetX(), e.GetY())
+                });
+        };
+
+        return true;
+    }
+}
 
         private readonly ChoreographerVsyncWaiter vsyncWaiter = new ChoreographerVsyncWaiter();
 
