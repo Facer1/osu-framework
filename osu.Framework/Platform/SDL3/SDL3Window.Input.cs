@@ -476,6 +476,8 @@ namespace osu.Framework.Platform.SDL3
 
         private void handleMouseButtonEvent(SDL_MouseButtonEvent evtButton)
         {
+                if (OperatingSystem.IsAndroid())
+        return;
             MouseButton button = mouseButtonFromEvent(evtButton.Button);
             SDL_MouseButtonFlags mask = SDL_BUTTON(evtButton.Button);
             Debug.Assert(Enum.IsDefined(mask));
