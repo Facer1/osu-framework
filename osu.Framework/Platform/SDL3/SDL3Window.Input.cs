@@ -41,11 +41,16 @@ namespace osu.Framework.Platform.SDL3
         /// </summary>
         public bool RelativeMouseMode
         {
-            get => relativeMouseMode;
-            set
-            {
-                if (relativeMouseMode == value)
-                    return;
+            public bool RelativeMouseMode
+{
+    get => relativeMouseMode;
+    set
+    {
+        if (OperatingSystem.IsAndroid())
+            value = false;
+
+        if (relativeMouseMode == value)
+            return;
 
                 if (value && !CursorState.HasFlagFast(CursorState.Hidden))
                     throw new InvalidOperationException($"Cannot set {nameof(RelativeMouseMode)} to true when the cursor is not hidden via {nameof(CursorState)}.");
